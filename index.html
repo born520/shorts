@@ -1,1 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
+      #player-container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+      #player { max-width: calc(100vh * 9 / 16); width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="player-container"><div id="player"></div></div>
+    <script>
+      // 이 부분은 Code.gs에서 GitHub 발행 시 실제 영상 ID 배열로 교체됩니다.
+      const videoIds = ["653tVJMRZUU","BJk0XfwZsk8","LSRQAq1TyRQ","S_iX678Dxhw"];
+      let player;
+      let currentVideoIndex = 0;
 
+      function onYouTubeIframeAPIReady() {
+        if (videoIds && videoIds.length > 0 && videoIds !== '{{VIDEO_ID_ARRAY_PLACEHOLDER}}') {
+          player = new YT.Player('player', {
+            height: '100%', width: '100%', videoId: videoIds[currentVideoIndex],
+            playerVars: { 'autoplay': 1, 'controls': 1, 'loop': 0, 'rel': 0, 'playsinline': 1 },
+            events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
+          });
+        } else {
+          document.getElementById('player-container').innerHTML = "<h1>재생할 영상이 없거나, 스크립트가 올바르게 발행되지 않았습니다.</h1>";
+        }
+      }
+      function onPlayerReady(event) { event.target.playVideo(); }
+      function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.ENDED) {
+          currentVideoIndex++;
+          if (currentVideoIndex >= videoIds.length) { currentVideoIndex = 0; }
+          player.loadVideoById(videoIds[currentVideoIndex]);
+        }
+      }
+    </script>
+    <script async src="https://www.youtube.com/iframe_api"></script>
+  </body>
+</html>
