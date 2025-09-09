@@ -7,33 +7,40 @@
         #player-container { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
         #player { max-width: calc(100vh * 9 / 16); width: 100%; height: 100%; }
         
-        /* --- 기본 버튼 스타일 (데스크탑) --- */
+        /* --- 최종 버튼 스타일 --- */
         #unmuteButton {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            padding: 15px 30px;
-            font-size: 18px;
+            
+            /* 화면 너비의 50%를 차지하도록 설정 (최대 300px) */
+            width: 50vw; 
+            max-width: 300px;
+            
+            /* 높이는 가로세로 비율에 맞게 자동으로 조절 */
+            padding-top: 15vw;
+            padding-bottom: 15vw;
+            max-height: 90px;
+            
+            /* 글자 크기도 화면의 작은 축에 비례하여 조절 */
+            font-size: 5vmin; 
+            
             font-weight: bold;
             color: white;
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 2px solid white;
-            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.75);
+            border: 3px solid white;
+            border-radius: 20px;
             cursor: pointer;
             z-index: 10;
             display: none;
             white-space: nowrap;
-        }
 
-        /* --- 모바일 화면에 대한 버튼 크기 조정 (768px 이하) --- */
-        @media (max-width: 768px) {
-            #unmuteButton {
-                padding: 40px 80px; /* ✨ 모바일에서 패딩 더 크게 */
-                font-size: 32px;    /* ✨ 모바일에서 폰트 크기 더 크게 */
-                border-width: 4px;  /* ✨ 모바일에서 테두리 더 두껍게 */
-                border-radius: 20px;/* 모서리를 좀 더 둥글게 */
-            }
+            /* 버튼 안의 글자도 중앙 정렬 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box; /* 패딩이 크기를 벗어나지 않도록 설정 */
         }
     </style>
 </head>
@@ -52,7 +59,7 @@
                 player = new YT.Player('player', {
                     height: '100%', width: '100%', videoId: videoIds[currentVideoIndex],
                     playerVars: { 'autoplay': 1, 'mute': 1, 'controls': 1, 'loop': 0, 'rel': 0, 'playsinline': 1 },
-                    events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
+                    events: { 'onReady': onPlayerReady, 'onStateChange': onStateChange }
                 });
             } else {
                 document.getElementById('player-container').innerHTML = "<h1>재생할 영상이 없습니다.</h1>";
@@ -63,7 +70,7 @@
             event.target.playVideo();
             const unmuteBtn = document.getElementById('unmuteButton');
             if (player.isMuted()) {
-                unmuteBtn.style.display = 'block';
+                unmuteBtn.style.display = 'flex'; // display: block -> flex 로 변경
             }
             unmuteBtn.addEventListener('click', () => {
                 player.unMute();
@@ -71,11 +78,11 @@
             });
         }
 
-        function onPlayerStateChange(event) {
+        function onStateChange(event) {
             if (event.data === YT.PlayerState.PLAYING) {
                 const unmuteBtn = document.getElementById('unmuteButton');
                 if (player.isMuted()) {
-                    unmuteBtn.style.display = 'block';
+                    unmuteBtn.style.display = 'flex'; // display: block -> flex 로 변경
                 } else {
                     unmuteBtn.style.display = 'none';
                 }
