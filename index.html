@@ -19,11 +19,11 @@
             max-width: 300px;
             
             /* 버튼 세로 패딩: 가로 크기에 비례하여 높이 조절 */
-            padding: 5vw 3vw; /* 상하 패딩을 더 작게 조정, 좌우 여백 확보 */
+            padding: 5vw 3vw;
             
-            /* 폰트 크기: 화면 너비에 비례, 최대 크기 지정하여 데스크탑에서 너무 커지지 않도록 */
+            /* 폰트 크기: 화면 너비에 비례, 최대 크기 지정 */
             font-size: 4.5vw; 
-            max-font-size: 28px; /* ✨ 최대 폰트 크기 설정 (데스크탑 등에서) */
+            max-font-size: 28px;
             
             font-weight: bold;
             color: white;
@@ -34,26 +34,31 @@
             z-index: 10;
             display: none;
             
-            white-space: normal; /* ✨ 텍스트 줄바꿈 허용 */
-            word-break: keep-all; /* ✨ 단어 단위로 줄바꿈 시도 */
-            text-align: center;   /* ✨ 텍스트 가운데 정렬 */
+            white-space: normal;
+            word-break: keep-all;
+            text-align: center;
 
-            /* flex로 설정하여 내부 텍스트 가운데 정렬 */
             display: flex;
             justify-content: center;
             align-items: center;
             box-sizing: border-box; 
-            line-height: 1.3; /* 줄 간격 조절 */
+            line-height: 1.3;
         }
 
         /* 폰트 크기가 너무 작아지지 않도록 최소값 설정 */
-        @media (max-width: 400px) { /* 더 작은 모바일 화면에서 */
+        @media (max-width: 400px) {
             #unmuteButton {
-                font-size: 20px; /* ✨ 최소 폰트 크기 지정 (너무 작아지지 않도록) */
+                font-size: 20px;
             }
         }
     </style>
-</head>
+
+    <meta property="og:title" content="한옥문의 양산이야기"/>
+    <meta property="og:description" content="한옥문의 시선집중 : 양산시민을 위한 현안들을 시민행복을 위해 살펴봅니다."/>
+    <meta property="og:image" content="https://i.postimg.cc/rwRmBZ4w/image.jpg"/>
+    <meta property="og:url" content="shorts.shorttime.co.kr/"/>
+    <meta property="og:type" content="website" />
+    </head>
 <body>
     <div id="player-container">
         <div id="player"></div>
@@ -69,7 +74,7 @@
                 player = new YT.Player('player', {
                     height: '100%', width: '100%', videoId: videoIds[currentVideoIndex],
                     playerVars: { 'autoplay': 1, 'mute': 1, 'controls': 1, 'loop': 0, 'rel': 0, 'playsinline': 1 },
-                    events: { 'onReady': onPlayerReady, 'onStateChange': onStateChange }
+                    events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
                 });
             } else {
                 document.getElementById('player-container').innerHTML = "<h1>재생할 영상이 없습니다.</h1>";
@@ -88,7 +93,7 @@
             });
         }
 
-        function onStateChange(event) {
+        function onPlayerStateChange(event) {
             if (event.data === YT.PlayerState.PLAYING) {
                 const unmuteBtn = document.getElementById('unmuteButton');
                 if (player.isMuted()) {
