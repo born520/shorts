@@ -1,48 +1,79 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <base target="_top">
     <style>
-      body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
-      #player-container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
-      #player { max-width: calc(100vh * 9 / 16); width: 100%; height: 100%; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
+        #player-container { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        #player { max-width: calc(100vh * 9 / 16); width: 100%; height: 100%; }
+        #unmuteButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid white;
+            border-radius: 10px;
+            cursor: pointer;
+            z-index: 10;
+            display: none; /* 처음에는 숨김 */
+        }
     </style>
-  </head>
-  <body>
-    <div id="player-container"><div id="player"></div></div>
+</head>
+<body>
+    <div id="player-container">
+        <div id="player"></div>
+        <button id="unmuteButton">터치하여 소리 켜기</button>
+    </div>
     <script>
-      // 이 부분은 Code.gs에서 GitHub 발행 시 실제 영상 ID 배열로 교체됩니다.
-      const videoIds = ["653tVJMRZUU","BJk0XfwZsk8","LSRQAq1TyRQ","S_iX678Dxhw"];
-      let player;
-      let currentVideoIndex = 0;
+        const videoIds = ["MyD3AC8LGAQ","653tVJMRZUU","BJk0XfwZsk8","LSRQAq1TyRQ","S_iX678Dxhw"];
+        let player;
+        let currentVideoIndex = 0;
 
-      function onYouTubeIframeAPIReady() {
-        if (videoIds && videoIds.length > 0 && videoIds !== '{{VIDEO_ID_ARRAY_PLACEHOLDER}}') {
-          player = new YT.Player('player', {
-            height: '100%', width: '100%', videoId: videoIds[currentVideoIndex],
-            playerVars: {
-              'autoplay': 1,
-              'mute': 1,     // 음소거 옵션 추가
-              'controls': 1,
-              'loop': 0,
-              'rel': 0,
-              'playsinline': 1
-            },
-            events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
-          });
-        } else {
-          document.getElementById('player-container').innerHTML = "<h1>재생할 영상이 없거나, 스크립트가 올바르게 발행되지 않았습니다.</h1>";
+        function onYouTubeIframeAPIReady() {
+            if (videoIds && videoIds.length > 0 && videoIds !== '{{VIDEO_ID_ARRAY_PLACEHOLDER}}') {
+                player = new YT.Player('player', {
+                    height: '100%', width: '100%', videoId: videoIds[currentVideoIndex],
+                    playerVars: { 'autoplay': 1, 'mute': 1, 'controls': 1, 'loop': 0, 'rel': 0, 'playsinline': 1 },
+                    events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
+                });
+            } else {
+                document.getElementById('player-container').innerHTML = "<h1>재생할 영상이 없습니다.</h1>";
+            }
         }
-      }
-      function onPlayerReady(event) { event.target.playVideo(); }
-      function onPlayerStateChange(event) {
-        if (event.data == YT.PlayerState.ENDED) {
-          currentVideoIndex++;
-          if (currentVideoIndex >= videoIds.length) { currentVideoIndex = 0; }
-          player.loadVideoById(videoIds[currentVideoIndex]);
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+            const unmuteBtn = document.getElementById('unmuteButton');
+            if (player.isMuted()) {
+                unmuteBtn.style.display = 'block';
+            }
+            unmuteBtn.addEventListener('click', () => {
+                player.unMute();
+                unmuteBtn.style.display = 'none';
+            });
         }
-      }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                const unmuteBtn = document.getElementById('unmuteButton');
+                if (player.isMuted()) {
+                    unmuteBtn.style.display = 'block';
+                } else {
+                    unmuteBtn.style.display = 'none';
+                }
+            }
+            if (event.data == YT.PlayerState.ENDED) {
+                currentVideoIndex++;
+                if (currentVideoIndex >= videoIds.length) { currentVideoIndex = 0; }
+                player.loadVideoById(videoIds[currentVideoIndex]);
+            }
+        }
     </script>
     <script async src="https://www.youtube.com/iframe_api"></script>
-  </body>
+</body>
 </html>
